@@ -9,7 +9,7 @@ import kagglehub
 path = kagglehub.dataset_download("shreyapmaher/fruits-dataset-images")
 print("Path to dataset files:", path)
 
-model = YOLO("yolov8n.pt")
+model = YOLO("yolov8m.pt")
 # model.info()
 
 # Train the model
