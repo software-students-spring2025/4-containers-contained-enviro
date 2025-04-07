@@ -5,4 +5,9 @@
 Build a containerized app that uses machine learning. See [instructions](./instructions.md) for details.
 
 ## Team Members
+Lana Davydov
+Jack Wang
+Joylyn Gong  
+Suhan Suresh
+
 
