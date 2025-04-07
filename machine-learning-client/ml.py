@@ -1,4 +1,3 @@
-# Using MEDIUM article as base for speech recognition
 import speech_recognition as sr
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
@@ -6,43 +5,45 @@ import pandas as pd
 
 movies = pd.read_csv('movies.csv')
 
+v = TfidfVectorizer()
+v_matrix = v.fit_transform(movies['description'].values.astype('U'))
+
+def get_recommendations_from_description(description, tfidf, tfidf_matrix, df, similarity_threshold=0.1, top_k=10):
+    desc_vector = tfidf.transform([description])
+    cosine_sim = linear_kernel(desc_vector, tfidf_matrix).flatten()
+    sim_scores = [(i, score) for i, score in enumerate(cosine_sim) if score >= similarity_threshold]
+    sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
+    top_scores = sim_scores[:top_k]
+
+    result_df = df.iloc[[i for i, _ in top_scores]].copy()
+    result_df['similarity'] = [score for _, score in top_scores]
+    
+    return result_df[['title', 'similarity', 'description']]
+
 recognizer = sr.Recognizer()
 
+# print("Available microphones:")
+# print(sr.Microphone.list_microphone_names())
 try:
-    # print("Available microphones:")
-    # print(sr.Microphone.list_microphone_names())
     with sr.Microphone() as source:
         print("Adjusting noise...")
         recognizer.adjust_for_ambient_noise(source, duration=0.5)
         print("Recording for 4 seconds...")
         recorded_audio = recognizer.listen(source, timeout=4)
         print("Done recording.")
-except Exception as ex:
-    print("Error during recording:", ex)
-    print("Please check your microphone settings.")
+except sr.WaitTimeoutError:
+    print("listening timed out while waiting for phrase to start")
 
 try:
     print("Recognizing the text...")
     text = recognizer.recognize_google(recorded_audio, language="en-US")
     text = text.lower()
-    print("Decoded Text: {}".format(text))
+    print(f"Decoded Text: {text}")
+    recommendations = get_recommendations_from_description(text, v, v_matrix, movies)
+    print(recommendations)
 except sr.UnknownValueError:
     print("Google Speech Recognition could not understand the audio.")
 except sr.RequestError:
     print("Could not request results from Google Speech Recognition service.")
-except Exception as ex:
-    print("Error during recognition:", ex)
-
-tfidf = TfidfVectorizer()
-tfidf_matrix = tfidf.fit_transform(movies['description'].values.astype('U'))
-
-def get_recommendations_from_description(description, tfidf, tfidf_matrix, df):
-    desc_vector = tfidf.transform([description])
-    cosine_sim = linear_kernel(desc_vector, tfidf_matrix).flatten()
-    sim_scores = list(enumerate(cosine_sim))
-    sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
-    top_indices = [i[0] for i in sim_scores[:10]]
-    return df[['title', 'star_rating', 'description']].iloc[top_indices]
-
-recommendations = get_recommendations_from_description(text, tfidf, tfidf_matrix, movies)
-print(recommendations)
+except NameError as ne:
+    print(ne)
