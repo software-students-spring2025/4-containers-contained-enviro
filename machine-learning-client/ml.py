@@ -1,20 +1,16 @@
 # Using MEDIUM article as base for speech recognition
 import speech_recognition as sr
-import kagglehub
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
-import glob
 import pandas as pd
 
 movies = pd.read_csv('movies.csv')
-print(movies.columns)
 
 recognizer = sr.Recognizer()
 
 try:
-    print("Available microphones:")
-    print(sr.Microphone.list_microphone_names())
-
+    # print("Available microphones:")
+    # print(sr.Microphone.list_microphone_names())
     with sr.Microphone() as source:
         print("Adjusting noise...")
         recognizer.adjust_for_ambient_noise(source, duration=0.5)
@@ -24,7 +20,7 @@ try:
 except Exception as ex:
     print("Error during recording:", ex)
     print("Please check your microphone settings.")
-    
+
 try:
     print("Recognizing the text...")
     text = recognizer.recognize_google(recorded_audio, language="en-US")
@@ -37,22 +33,16 @@ except sr.RequestError:
 except Exception as ex:
     print("Error during recognition:", ex)
 
-en_descriptions = movies['description']
-
-v = TfidfVectorizer()
-tfidf_matrix = v.fit_transform(en_descriptions.values.astype('U'))
+tfidf = TfidfVectorizer()
+tfidf_matrix = tfidf.fit_transform(movies['description'].values.astype('U'))
 
 def get_recommendations_from_description(description, tfidf, tfidf_matrix, df):
-
     desc_vector = tfidf.transform([description])
-    
     cosine_sim = linear_kernel(desc_vector, tfidf_matrix).flatten()
-    
     sim_scores = list(enumerate(cosine_sim))
     sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
     top_indices = [i[0] for i in sim_scores[:10]]
-    
     return df[['title', 'star_rating', 'description']].iloc[top_indices]
 
-recommendations = get_recommendations_from_description(text, v, tfidf_matrix, movies)
+recommendations = get_recommendations_from_description(text, tfidf, tfidf_matrix, movies)
 print(recommendations)
