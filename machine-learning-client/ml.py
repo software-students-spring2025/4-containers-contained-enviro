@@ -1,3 +1,4 @@
+"""Machine learning module for speech recognition and similarity prediction."""
 import speech_recognition as sr
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
