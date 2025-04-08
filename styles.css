@@ -5,7 +5,8 @@ html, body {
     box-sizing: border-box;
   }
   
-  .register-container {
+  .register-container,
+  .login-container {
     width: 100%;
     max-width: 400px;
     padding: 2rem;
