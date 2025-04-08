@@ -32,14 +32,31 @@ main {
     height: 100px;
     width: 100px;
     border-radius: 50%;
-    background: white;
-    border: 2px solid red;
-    font-size: 20px;
-    color: red;
-    transition: .2s;
+    transition: .2s background, color;
+    cursor: pointer;
+    border: 2px solid rgb(255, 50, 50);
 }
 
-.record-btn:hover {
+ion-icon {
+    font-size: 40px;
+}
+
+#start-recording {
+    color: rgb(255, 50, 50);
+    background: white;
+}
+
+#start-recording:hover {
     color: white;
-    background: red;
+    background: rgb(255, 50, 50);
+}
+
+#stop-recording {
+    color: white;
+    background: rgb(255, 50, 50);
+}
+
+#stop-recording:hover {
+    color: rgb(255, 50, 50);
+    background: white;
 }
