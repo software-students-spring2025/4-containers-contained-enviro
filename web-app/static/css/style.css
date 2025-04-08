@@ -32,9 +32,9 @@ main {
     height: 100px;
     width: 100px;
     border-radius: 50%;
-    transition: .2s background, color;
+    transition: .3s background, color;
     cursor: pointer;
-    border: 2px solid rgb(255, 50, 50);
+    border: 0 solid rgb(255, 50, 50);
 }
 
 ion-icon {
@@ -42,21 +42,38 @@ ion-icon {
 }
 
 #start-recording {
-    color: rgb(255, 50, 50);
-    background: white;
+    color: white;
+    background: rgb(255, 75, 75);
 }
 
 #start-recording:hover {
-    color: white;
-    background: rgb(255, 50, 50);
+    background: rgb(255, 0, 0);
 }
 
 #stop-recording {
     color: white;
-    background: rgb(255, 50, 50);
+    background: rgb(255, 75, 75);
 }
 
 #stop-recording:hover {
-    color: rgb(255, 50, 50);
-    background: white;
+    color: white;
+    background: rgb(255, 0, 0);
+}
+
+.expand-btn {
+    position: absolute;
+    background: rgb(255, 240, 240);
+    transition: 0.5s;
+    border-radius: 50%;
+    z-index: -1;
+}
+
+#start-expand {
+    height: 120vw;
+    width: 120vw;
+}
+
+#stop-expand {
+    height: 0%;
+    width: 0%;
 }
