@@ -6,10 +6,8 @@ name = "pypi"
 [packages]
 pylint = "*"
 black = "*"
-speechrecognition = "*"
 scikit-learn = "*"
 pandas = "*"
-pyaudio = "*"
 
 [dev-packages]
 
