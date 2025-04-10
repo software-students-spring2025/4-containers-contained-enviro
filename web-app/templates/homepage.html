@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Movie Recommendations Through Voice Recording</title>
-</head>
+{% extends "base.html" %}
 
-<body>
+{% block title %}
+  <title>Movie Recommendations Through Voice Recording</title>
+{% endblock %}
+
+
+{% block content %}
   <h1>Movie Recommendations For You</h1>
   <p>Please click the button below and describe a movie you're interested in viewing.</p>
 
@@ -70,5 +71,4 @@
       statusText.textContent = "getUserMedia is not supported in your browser.";
     }
   </script>
-</body>
-</html>
+  {% endblock %}
