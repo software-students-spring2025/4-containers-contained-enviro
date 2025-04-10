@@ -25,27 +25,21 @@ app.secret_key = os.getenv("SECRET_KEY", "your-secret-key-here")
 def get_database():
     """Get MongoDB database connection."""
     try:
-        # Get MongoDB connection details from environment variables
         mongo_user = os.getenv("MONGO_USER", "ml_user")
         mongo_password = os.getenv("MONGO_PASSWORD", "ml_password")
         mongo_host = os.getenv("MONGO_HOST", "mongodb")
         mongo_port = os.getenv("MONGO_PORT", "27017")
         mongo_db = os.getenv("MONGO_DB", "ml_data")
 
-        # Create MongoDB connection URL
         mongo_url = (
             f"mongodb://{mongo_user}:{mongo_password}@"
             f"{mongo_host}:{mongo_port}/{mongo_db}"
         )
 
-        # Connect to MongoDB with connection pooling
         client = MongoClient(mongo_url, maxPoolSize=50, waitQueueTimeoutMS=2000)
-
-        # Test connection
-        client.admin.command("ismaster")
+        client.admin.command("ismaster")  # Test connection
         logger.info("Successfully connected to MongoDB")
 
-        # Get database
         return client[mongo_db]
 
     except ConnectionFailure as e:
@@ -59,27 +53,32 @@ def get_database():
         raise
 
 
-# Initialize database collections
-try:
-    database = get_database()
-    users_collection = database.users
-    movies_collection = database.movies
-    sensor_data_collection = database.sensor_data
-    ml_results_collection = database.ml_results
-except (ConnectionFailure, OperationFailure) as e:
-    logger.error("Failed to connect to MongoDB: %s", str(e))
-    raise
+# init of database collections
+users_collection = None
+movies_collection = None
+sensor_data_collection = None
+ml_results_collection = None
+
+
+def init_collections():
+    global users_collection, movies_collection, sensor_data_collection, ml_results_collection
+    if not all([users_collection, movies_collection, sensor_data_collection, ml_results_collection]):
+        db = get_database()
+        users_collection = db.users
+        movies_collection = db.movies
+        sensor_data_collection = db.sensor_data
+        ml_results_collection = db.ml_results
 
 
 @app.route("/")
 def index():
-    """Home page route."""
+    init_collections()
     return render_template("homepage.html")
 
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    """Login route."""
+    init_collections()
     if request.method == "POST":
         try:
             username = request.form.get("username")
@@ -100,7 +99,7 @@ def login():
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
-    """Register route."""
+    init_collections()
     if request.method == "POST":
         try:
             username = request.form.get("username")
@@ -110,13 +109,11 @@ def register():
                 flash("Username already exists", "error")
             else:
                 hashed_password = generate_password_hash(password)
-                users_collection.insert_one(
-                    {
-                        "username": username,
-                        "password": hashed_password,
-                        "saved_movies": [],
-                    }
-                )
+                users_collection.insert_one({
+                    "username": username,
+                    "password": hashed_password,
+                    "saved_movies": [],
+                })
                 flash("Registration successful!", "success")
                 return redirect(url_for("login"))
         except OperationFailure:
@@ -128,7 +125,7 @@ def register():
 
 @app.route("/movie/<movie_title>")
 def movie_page(movie_title):
-    """Movie details page route."""
+    init_collections()
     try:
         movie_obj = movies_collection.find_one({"title": movie_title})
         if not movie_obj:
@@ -143,7 +140,7 @@ def movie_page(movie_title):
 
 @app.route("/movies_saved")
 def movies_saved():
-    """Saved movies page route."""
+    init_collections()
     try:
         if "user_id" not in session:
             flash("Please log in to view saved movies", "error")
@@ -164,7 +161,6 @@ def movies_saved():
 
 @app.route("/logout")
 def logout():
-    """Logout route."""
     session.clear()
     flash("You have been logged out", "success")
     return redirect(url_for("index"))

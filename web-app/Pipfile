@@ -10,6 +10,7 @@ python-dotenv = "*"
 requests = "*"
 
 [dev-packages]
+pytest = "*"
 pylint = "*"
 black = "*"
 tomli = "*"
