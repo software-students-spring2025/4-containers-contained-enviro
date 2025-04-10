@@ -37,7 +37,7 @@ jobs:
         run: docker build -t ml-client ./machine-learning-client
 
       - name: Run ML Client container
-        run: docker run --rm ml-client
+        run: docker run --rm --network host ml-client
 
       # Build and run Web App individually
       - name: Build Web App container
@@ -45,7 +45,7 @@ jobs:
 
       - name: Run Web App container and test
         run: |
-          docker run -d --rm --name test-web-app -p 5001:5001 web-app
+          docker run -p 5001:5001 --name web-app web-app
           sleep 10
           curl --retry 5 --retry-delay 5 --fail http://localhost:5001
           docker stop test-web-app
