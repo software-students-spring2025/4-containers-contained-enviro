@@ -1,0 +1,65 @@
+name: CI for Web App and ML Client
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    services:
+      mongodb:
+        image: mongo:latest
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd="mongosh --eval 'db.stats()'" 
+          --health-interval=10s 
+          --health-timeout=5s 
+          --health-retries=5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      # Test ML Client
+      - name: Build ML Client container
+        run: docker build -t ml-client ./machine-learning-client
+
+      - name: Run ML Client tests
+        run: |
+          docker run --rm --network host ml-client python -c "
+          print('Machine Learning Client is running');
+          "
+
+      # Test Web App
+      - name: Build Web App container
+        run: docker build -t web-app ./web-app
+
+      - name: Run Web App smoke test
+        run: |
+          docker run --rm --network host web-app python -c "
+          import requests;
+          r = requests.get('http://localhost:5001');
+          assert r.status_code == 200;
+          print('Web App responded with 200 OK');
+          "
+
+      # Test all together
+      - name: Build and run Docker Compose
+        run: docker-compose up --build -d
+
+      - name: Test services
+        run: curl --retry 5 --retry-delay 5 --fail http://localhost:5001
+
+
