@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ movie.title }}</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="movie-container">
+        <img class="movie-poster" src="{{ movie.poster_url }}" alt="{{ movie.title }} Poster">
+
+        <div class="movie-details">
+            <h1>{{ movie.title }}</h1>
+            <div class="info"><strong>Director:</strong> {{ movie.director }}</div>
+            <div class="info"><strong>Genre:</strong> {{ movie.genre }}</div>
+            <div class="info"><strong>Actors:</strong> {{ movie.actors | join(', ') }}</div>
+            <div class="info"><strong>Year:</strong> {{ movie.year }}</div>
+            <div class="info"><strong>Rating:</strong> {{ movie.rating }}</div>
+            <div class="description">
+                <strong>Description:</strong> {{ movie.description }}
+            </div>
+        </div>
+    </div>
+    
+</body>
+</html>
