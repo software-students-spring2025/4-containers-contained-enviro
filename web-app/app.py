@@ -51,13 +51,5 @@ def movies_saved():
     return render_template("movies_saved.html")
 
 
-# @app.route("/")
-# def index():
-#     """Default path"""
-#     return render_template("homepage.html")
-
-
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=os.environ.get("PORT", 5001), debug=True)
-
-print("Delete this")

@@ -41,7 +41,7 @@
 
               statusText.textContent = "Processing your voice...";
               recordButton.classList.remove("recording");
-              stopButton.style.display = "none"; 
+              stopButton.style.display = "none";
 
               fetch("/process-voice", {
                 method: "POST",
