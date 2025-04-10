@@ -57,3 +57,18 @@ To build and run the Machine Learning Client:
 1. `cd machine-learning-client`
 2. `docker build -t ml-client .`
 3. `docker run --name ml-client ml-client`
+
+### Testing
+## Running Unit Tests Locally
+
+Running unit tests locally on the web app:
+1. `cd web-app`
+2. `pipenv install --dev`
+3. `pipenv shell`
+4. `pytest --cov=.`
+
+Running unit tests locally on the ML Client:
+1. `cd machine-learning-client`
+2. `pipenv install --dev`
+3. `pipenv shell`
+4. `pytest --cov=.'
