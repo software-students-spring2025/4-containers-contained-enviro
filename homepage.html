@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Movie Recommendations Through Voice Recording</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
@@ -52,9 +53,12 @@
             mediaRecorder.start();
             statusText.textContent = "Recording...";
 
+            recordButton.classList.add("recording");
+
     
             setTimeout(() => {
               mediaRecorder.stop();
+              recordButton.classList.remove("recording");
             }, 10000);
           })
           .catch(err => {

@@ -145,6 +145,58 @@ html, body {
     }
   }
 
+  body {
+    text-align: center;
+    color: #fdf3ee;
+    padding: 3rem 1rem;
+  }
+  
+  #recordButton {
+    margin: 2rem auto;
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    background-color: #b71c1c;
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(183, 28, 28, 0.4);
+    transition: background-color 0.3s, box-shadow 0.3s;
+  }
+  
+  #recordButton:hover {
+    background-color: #d32f2f;
+  }
+  
+  #recordButton.recording {
+    animation: pulse 1s ease-in-out infinite;
+    background-color: #ff1744;
+    box-shadow: 0 0 25px rgba(255, 23, 68, 0.8);
+  }
+  
+  #statusText {
+    margin-top: 1rem;
+    font-style: italic;
+    font-size: 1rem;
+    color: #ccc;
+  }
+  
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+      box-shadow: 0 0 20px rgba(255, 23, 68, 0.5);
+    }
+    50% {
+      transform: scale(1.1);
+      box-shadow: 0 0 30px rgba(255, 23, 68, 0.9);
+    }
+    100% {
+      transform: scale(1);
+      box-shadow: 0 0 20px rgba(255, 23, 68, 0.5);
+    }
+  }
+  
   @keyframes gradientShift {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
