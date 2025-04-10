@@ -1,7 +1,7 @@
+"""Unit tests for Flask routes."""
 
-
-def test_index(client):
-    """Test the root route '/' returns a 200 OK and expected content."""
-    response = client.get("/")
+def test_index_route(test_client):
+    """Test the home route returns the correct response."""
+    response = test_client.get("/")
     assert response.status_code == 200
     assert b"Flask works" in response.data
