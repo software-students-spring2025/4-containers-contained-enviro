@@ -24,6 +24,6 @@ class MLC:  # pylint: disable=too-few-public-methods
         result_df["similarity"] = [score for _, score in sim_scores]
 
         if result_df.empty:
-            return 'No match found'
+            return "No match found"
 
         return result_df[["title", "similarity", "description"]]
