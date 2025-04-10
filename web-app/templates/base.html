@@ -3,15 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>App</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block title %}
+        <title>App</title>
+    {% endblock %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
-    <header class="header-container">
-        <a class='header' href="/">
-            <h1>Title</h1>
-        </a>
-    </header>
     <main>
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+
+{% block title %}
+  <title>Movie Recommendations Through Voice Recording</title>
+{% endblock %}
+
+{% block content %}
+  <h1>Movie Recommendations For You</h1>
+  <p>Please click the button below and describe a movie you're interested in viewing.</p>
+
+  <button id="recordButton">Start Recording</button>
+  <button id="stopButton" style="display: none;">Stop Recording</button>
+
+  <p id="statusText">Press the button to begin.</p>
+
+  <script>
+    const recordButton = document.getElementById('recordButton');
+    const stopButton = document.getElementById('stopButton');
+    const statusText = document.getElementById('statusText');
+
+    let mediaRecorder;
+    let chunks = [];
+
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      recordButton.addEventListener('click', () => {
+
+        navigator.mediaDevices.getUserMedia({ audio: true })
+          .then(stream => {
+            mediaRecorder = new MediaRecorder(stream);
+            chunks = [];
+
+            mediaRecorder.ondataavailable = e => {
+              chunks.push(e.data);
+            };
+
+            mediaRecorder.onstop = () => {
+              const audioBlob = new Blob(chunks, { type: 'audio/wav' });
+              const formData = new FormData();
+              formData.append("audio", audioBlob);
+
+              statusText.textContent = "Processing your voice...";
+              recordButton.classList.remove("recording");
+              stopButton.style.display = "none"; 
+
+              fetch("/process-voice", {
+                method: "POST",
+                body: formData
+              })
+              .then(res => res.json())
+              .then(data => {
+                statusText.textContent = "Movie suggestion: " + data.recommendation;
+              })
+              .catch(() => {
+                statusText.textContent = "Please record again -- an error has occurred.";
+              });
+            };
+
+            mediaRecorder.start();
+            statusText.textContent = "Recording...";
+
+            recordButton.classList.add("recording");
+
+            stopButton.style.display = "inline-block";
+
+    
+            setTimeout(() => {
+              if (mediaRecorder && mediaRecorder.state === "recording") {
+                mediaRecorder.stop();
+              }
+            }, 10000);
+          })
+          .catch(err => {
+            console.error("The following getUserMedia error occurred:", err);
+            statusText.textContent = "Microphone access is required.";
+          });
+      });
+
+      stopButton.addEventListener('click', () => {
+        if (mediaRecorder && mediaRecorder.state === "recording") {
+          mediaRecorder.stop();
+        }
+      });
+
+    } else {
+      statusText.textContent = "getUserMedia is not supported in your browser.";
+    }
+  </script>
+{% endblock %}
