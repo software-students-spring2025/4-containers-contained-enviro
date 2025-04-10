@@ -14,7 +14,6 @@ class MLC:  # pylint: disable=too-few-public-methods
 
     def get_recommendations(self, description, df, threshold=0.1):
         """Returns movies sorted by similarity to provided description."""
-        print(df)
         desc_vector = self.tfidf.transform([description])
         cosine_sim = linear_kernel(desc_vector, self.tfidf_matrix).flatten()
         sim_scores = [
