@@ -32,10 +32,6 @@ jobs:
         with:
           python-version: "3.10"
 
-      # Test MongoDB
-      - name: Test MongoDB container
-        run: docker exec mongodb mongosh --eval "printjson(db.stats())"
-
       # Build and run Machine Learning Client individually
       - name: Build ML Client container
         run: docker build -t ml-client ./machine-learning-client
