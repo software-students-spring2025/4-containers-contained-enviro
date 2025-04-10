@@ -1,4 +1,5 @@
 """Flask web application with MongoDB integration."""
+
 import os
 import logging
 from flask import Flask, render_template, request, redirect, url_for, flash
@@ -14,8 +15,11 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Initialize Flask app
-app = Flask(__name__, template_folder="templates", static_folder="static", static_url_path="/")
+app = Flask(
+    __name__, template_folder="templates", static_folder="static", static_url_path="/"
+)
 app.secret_key = os.getenv("SECRET_KEY", "your-secret-key-here")
+
 
 def get_database():
     """Get MongoDB database connection."""
@@ -53,6 +57,7 @@ def get_database():
         logger.error("An error occurred while connecting to MongoDB: %s", str(e))
         raise
 
+
 # Initialize database collections
 try:
     database = get_database()
@@ -64,10 +69,12 @@ except (ConnectionFailure, OperationFailure) as e:
     logger.error("Failed to connect to MongoDB: %s", str(e))
     raise
 
+
 @app.route("/")
 def index():
     """Home page route."""
     return render_template("homepage.html")
+
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -75,7 +82,9 @@ def login():
     if request.method == "POST":
         try:
             username = request.form.get("username")
-            password = request.form.get("password")  # FIXME: Use proper password hashing
+            password = request.form.get(
+                "password"
+            )  # FIXME: Use proper password hashing
 
             user = users_collection.find_one({"username": username})
             if user and user["password"] == password:
@@ -88,13 +97,16 @@ def login():
 
     return render_template("login.html")
 
+
 @app.route("/register", methods=["GET", "POST"])
 def register():
     """Register route."""
     if request.method == "POST":
         try:
             username = request.form.get("username")
-            password = request.form.get("password")  # FIXME: Use proper password hashing
+            password = request.form.get(
+                "password"
+            )  # FIXME: Use proper password hashing
 
             if users_collection.find_one({"username": username}):
                 flash("Username already exists", "error")
@@ -114,6 +126,7 @@ def register():
 
     return render_template("register.html")
 
+
 @app.route("/movie/<movie_title>")
 def movie_page(movie_title):
     """Movie details page route."""
@@ -127,6 +140,7 @@ def movie_page(movie_title):
         flash("Database error occurred", "error")
         logger.error("Database error in movie_page route")
         return redirect(url_for("index"))
+
 
 @app.route("/movies_saved")
 def movies_saved():
@@ -144,6 +158,7 @@ def movies_saved():
         flash("Database error occurred", "error")
         logger.error("Database error in movies_saved route")
         return render_template("movies_saved.html", movies=[])
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=os.environ.get("PORT", 5001), debug=True)
