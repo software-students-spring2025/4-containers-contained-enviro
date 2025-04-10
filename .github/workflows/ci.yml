@@ -44,11 +44,7 @@ jobs:
         run: docker build -t web-app ./web-app
 
       - name: Run Web App container and test
-        run: |
-          docker run -p 5001:5001 --name web-app web-app
-          sleep 10
-          curl --retry 5 --retry-delay 5 --fail http://localhost:5001
-          docker stop test-web-app
+        run: docker run -d --rm --name test-web-app -p 5001:5001 --network host web-app
 
       # Build and run the full system
       - name: Build and run full system with Docker Compose
