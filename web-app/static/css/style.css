@@ -1,0 +1,79 @@
+.header-container {
+    position: absolute;         
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    text-align: center;
+}
+
+.header {
+    text-decoration: none;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background: white;
+    width: 100%;
+    height: 100vh;
+}
+
+main {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.record-btn {
+    display:block;
+    height: 100px;
+    width: 100px;
+    border-radius: 50%;
+    transition: .3s background, color;
+    cursor: pointer;
+    border: 0 solid rgb(255, 50, 50);
+}
+
+ion-icon {
+    font-size: 40px;
+}
+
+#start-recording {
+    color: white;
+    background: rgb(255, 75, 75);
+}
+
+#start-recording:hover {
+    background: rgb(255, 0, 0);
+}
+
+#stop-recording {
+    color: white;
+    background: rgb(255, 75, 75);
+}
+
+#stop-recording:hover {
+    color: white;
+    background: rgb(255, 0, 0);
+}
+
+.expand-btn {
+    position: absolute;
+    background: rgb(255, 240, 240);
+    transition: 0.5s;
+    border-radius: 50%;
+    z-index: -1;
+}
+
+#start-expand {
+    height: 120vw;
+    width: 120vw;
+}
+
+#stop-expand {
+    height: 0%;
+    width: 0%;
+}
