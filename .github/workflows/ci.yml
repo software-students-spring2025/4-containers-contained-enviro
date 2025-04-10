@@ -32,47 +32,34 @@ jobs:
         with:
           python-version: "3.10"
 
-      # Test ML Client
-      - name: Install ML Client dependencies
-        working-directory: machine-learning-client
-        run: pip install pipenv && pipenv install --dev
+      # Test MongoDB
+      - name: Test MongoDB container
+        run: docker exec mongodb mongosh --eval "printjson(db.stats())"
 
-      - name: Run ML Client tests
-        working-directory: machine-learning-client
+      # Build and run Machine Learning Client individually
+      - name: Build ML Client container
+        run: docker build -t ml-client ./machine-learning-client
+
+      - name: Run ML Client container
+        run: docker run --rm --network host ml-client
+
+      # Build and run Web App individually
+      - name: Build Web App container
+        run: docker build -t web-app ./web-app
+
+      - name: Run Web App container and test
         run: |
-          pipenv run python -c "
-          print('Machine Learning Client environment OK');
-          "
+          docker run -d --rm --name test-web-app -p 5001:5001 --network host web-app
+          sleep 10
+          curl --retry 5 --retry-delay 5 --fail http://localhost:5001
+          docker stop test-web-app
 
-      # Test Web App
-      - name: Install Web App dependencies
-        working-directory: web-app
-        run: pip install pipenv && pipenv install --dev
-
-      - name: Run Web App smoke test
-        working-directory: web-app
-        run: |
-          pipenv run python -c "
-          import requests, time
-          for _ in range(5):
-              try:
-                  r = requests.get('http://localhost:5001')
-                  if r.status_code == 200:
-                      print('Web App responded with 200 OK')
-                      break
-              except Exception as e:
-                  print('Waiting for web app...')
-                  time.sleep(5)
-          else:
-              raise Exception('Web App did not start in time')
-          "
-
-      # Run Full System
-      - name: Build and run Docker Compose
+      # Build and run the full system
+      - name: Build and run full system with Docker Compose
         run: docker-compose up --build -d
 
-      - name: Test all services together
+      - name: Test full system services
         run: curl --retry 5 --retry-delay 5 --fail http://localhost:5001
 
-      - name: Tear down
+      - name: Tear down full system
         run: docker-compose down -v
