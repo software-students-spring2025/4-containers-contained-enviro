@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+
+{% block title %}
+  <title>Movie Recommendations Through Voice Recording</title>
+{% endblock %}
+
+{% block content %}
+  <h1>Movie Recommendations For You</h1>
+  <p>Please click the button below and describe a movie you're interested in viewing.</p>
+
+  <button id="recordButton">Start Recording</button>
+  <p id="statusText">Press the button to begin.</p>
+
+  <script>
+    const recordButton = document.getElementById('recordButton');
+    const statusText = document.getElementById('statusText');
+
+
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      recordButton.addEventListener('click', () => {
+
+        navigator.mediaDevices.getUserMedia({ audio: true })
+          .then(stream => {
+            const mediaRecorder = new MediaRecorder(stream);
+            let chunks = [];
+
+            mediaRecorder.ondataavailable = e => {
+              chunks.push(e.data);
+            };
+
+            mediaRecorder.onstop = () => {
+              const audioBlob = new Blob(chunks, { type: 'audio/wav' });
+              const formData = new FormData();
+              formData.append("audio", audioBlob);
+
+              statusText.textContent = "Processing your voice...";
+
+              fetch("/process-voice", {
+                method: "POST",
+                body: formData
+              })
+              .then(res => res.json())
+              .then(data => {
+                statusText.textContent = "Movie suggestion: " + data.recommendation;
+              })
+              .catch(() => {
+                statusText.textContent = "Please record again -- an error has occurred.";
+              });
+            };
+
+            mediaRecorder.start();
+            statusText.textContent = "Recording...";
+
+    
+            setTimeout(() => {
+              mediaRecorder.stop();
+            }, 10000);
+          })
+          .catch(err => {
+            console.error("The following getUserMedia error occurred:", err);
+            statusText.textContent = "Microphone access is required.";
+          });
+      });
+    } else {
+      statusText.textContent = "getUserMedia is not supported in your browser.";
+    }
+  </script>
+  {% endblock %}
