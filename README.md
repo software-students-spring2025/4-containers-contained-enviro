@@ -58,7 +58,7 @@ To build and run the Machine Learning Client:
 2. `docker build -t ml-client .`
 3. `docker run --name ml-client ml-client`
 
-### Testing
+# Testing
 ## Running Unit Tests Locally
 
 Running unit tests locally on the web app:
