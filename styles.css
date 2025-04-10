@@ -208,6 +208,48 @@ html, body {
     }
   }
 
+  body > div {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    padding: 1rem;
+  }
+  
+  /* Each Movie Card */
+  body > div > div {
+    background-color: #1c1c1c;  /* Deep grey background */
+    border: 2px solid #b71c1c;  /* Red accent border */
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 10px 25px rgba(183, 28, 28, 0.5);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  /* Hover effect for a movie card */
+  body > div > div:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(183, 28, 28, 0.8);
+  }
+  
+  /* Movie Poster in each card */
+  body > div > div img {
+    width: 100%;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+  }
+  
+  /* Movie Title */
+  body > div > div h2 {
+    margin: 0.5rem 0;
+    color: #ff1744; /* Bold red accent */
+  }
+  
+  /* Movie Year Text */
+  body > div > div p {
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+  }
+  
   @keyframes gradientShift {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
