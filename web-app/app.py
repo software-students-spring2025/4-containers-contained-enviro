@@ -1,8 +1,9 @@
 """Flask app"""
- # pylint: disable=unused-import, method-hidden
- # pylint: enable=too-many-lines
+# pylint: disable=unused-import, method-hidden
+# pylint: enable=too-many-lines
 import os
 from flask import Flask, render_template, request, redirect, url_for, flash
+
 # from flask_login import (
 #     LoginManager,
 #     UserMixin,
@@ -26,3 +27,5 @@ def index():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=os.environ.get("PORT", 5001), debug=True)
+
+print("Delete this")
