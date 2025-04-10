@@ -4,17 +4,17 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
 import pandas as pd
 
-class MLC: # pylint: disable=too-few-public-methods
+
+class MLC:  # pylint: disable=too-few-public-methods
     """This is the Machine Learning Client class"""
+
     def __init__(self, data):
         """Takes data and fits a tf-idf vectorizer with it"""
         self.data = pd.DataFrame(data)
         self.tfidf = TfidfVectorizer()
         self.tfidf_matrix = self.tfidf.fit_transform(data)
 
-    def get_recommendations(
-        self, description, df, threshold=0.1
-    ):
+    def get_recommendations(self, description, df, threshold=0.1):
         """Returns movies sorted by similarity to provided description."""
         desc_vector = self.tfidf.transform([description])
         cosine_sim = linear_kernel(desc_vector, self.tfidf_matrix).flatten()
