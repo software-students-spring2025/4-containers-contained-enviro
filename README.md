@@ -15,3 +15,45 @@ Build a containerized app that uses machine learning. See [instructions](./instr
 ## Description
 
 This web app provides a personalized experience for a user to speak into a microphone about a movie that they may be interested in viewing. Once they complete their recording, they will be provided with a film that most closely aligns with their interests.
+
+## Instructions
+
+### All services
+
+To build and run all services:
+1. `docker-compose up --build`
+2. Visit `http://localhost:5001/`
+
+To shut down: `docker-compose down -v`
+
+### MongoDB
+
+To build and run MongoDB:
+```
+docker run --name mongodb -d -p 27017:27017 \
+  -v $(pwd)/mongo-init:/docker-entrypoint-initdb.d \
+  mongo --auth
+```
+
+To open a MongoDB shell in the container and test it:
+1. `docker exec -it mongodb mongosh`
+2. `use ml_data`
+3. `db.auth("ml_user", "ml_password")`
+3. `show collections`
+
+To shut down: `docker stop mongodb && docker rm mongodb`
+
+### Web App
+
+To build and run the Web App:
+1. `cd web-app`
+2. `docker build -t web-app .`
+3. `docker run -p 5001:5001 --name web-app web-app`
+4. Visit `http://localhost:5001/`
+
+### Machine Learning Client
+
+To build and run the Machine Learning Client:
+1. `cd machine-learning-client`
+2. `docker build -t ml-client .`
+3. `docker run --name ml-client ml-client`
