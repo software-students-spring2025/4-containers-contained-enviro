@@ -2,10 +2,11 @@
 
 import os
 import logging
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure, OperationFailure
 from dotenv import load_dotenv
+from werkzeug.security import generate_password_hash, check_password_hash
 
 # Load environment variables
 load_dotenv()
@@ -82,12 +83,11 @@ def login():
     if request.method == "POST":
         try:
             username = request.form.get("username")
-            password = request.form.get(
-                "password"
-            )  # FIXME: Use proper password hashing
+            password = request.form.get("password")
 
             user = users_collection.find_one({"username": username})
-            if user and user["password"] == password:
+            if user and check_password_hash(user["password"], password):
+                session["user_id"] = str(user["_id"])
                 flash("Login successful!", "success")
                 return redirect(url_for("index"))
             flash("Invalid username or password", "error")
@@ -104,17 +104,16 @@ def register():
     if request.method == "POST":
         try:
             username = request.form.get("username")
-            password = request.form.get(
-                "password"
-            )  # FIXME: Use proper password hashing
+            password = request.form.get("password")
 
             if users_collection.find_one({"username": username}):
                 flash("Username already exists", "error")
             else:
+                hashed_password = generate_password_hash(password)
                 users_collection.insert_one(
                     {
                         "username": username,
-                        "password": password,
+                        "password": hashed_password,
                         "saved_movies": [],
                     }
                 )
@@ -146,8 +145,11 @@ def movie_page(movie_title):
 def movies_saved():
     """Saved movies page route."""
     try:
-        # FIXME: Use proper user authentication
-        user = users_collection.find_one({"username": "test_user"})
+        if "user_id" not in session:
+            flash("Please log in to view saved movies", "error")
+            return redirect(url_for("login"))
+
+        user = users_collection.find_one({"_id": session["user_id"]})
         if user:
             saved_movies = movies_collection.find(
                 {"_id": {"$in": user.get("saved_movies", [])}}
@@ -158,6 +160,14 @@ def movies_saved():
         flash("Database error occurred", "error")
         logger.error("Database error in movies_saved route")
         return render_template("movies_saved.html", movies=[])
+
+
+@app.route("/logout")
+def logout():
+    """Logout route."""
+    session.clear()
+    flash("You have been logged out", "success")
+    return redirect(url_for("index"))
 
 
 if __name__ == "__main__":
