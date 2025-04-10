@@ -5,6 +5,9 @@ html, body {
     background-size: 300% 300%;
     animation: gradientShift 10s ease infinite;
     box-sizing: border-box;
+    text-align: center;
+    color: #fdf3ee;
+    padding: 3rem 1rem;
   }
   
   .register-container,
@@ -144,7 +147,109 @@ html, body {
       font-size: 1.5rem;
     }
   }
+  
+  #statusText {
+    margin-top: 1rem;
+    font-style: italic;
+    font-size: 1rem;
+    color: #ccc;
+  }
 
+  #recordButton {
+    margin: 2rem auto;
+    padding: 1rem 2.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    background-color: #b71c1c;
+    color: #fff;
+    border: none;
+    border-radius: 40px;
+    cursor: pointer;
+    transition: background-color 0.3s, box-shadow 0.3s, transform 0.3s;
+    box-shadow: 0 0 10px rgba(183, 28, 28, 0.4);
+  }
+  
+
+  #recordButton:hover {
+    background-color: #d32f2f;
+    box-shadow: 0 0 15px rgba(255, 23, 68, 0.6);
+  }
+  
+  #recordButton.recording {
+    animation: elegantPulse 1.5s ease-in-out infinite;
+    background-color: #ff1744;
+    box-shadow: 0 0 20px rgba(255, 23, 68, 0.4);
+    transform: scale(1.03);
+  }
+
+  #stopButton {
+    margin: 1rem auto;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 500;
+    background-color: #444;
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+  
+#stopButton:hover {
+    background-color: #666;
+}
+  
+  @keyframes elegantPulse {
+    0%, 100% {
+      box-shadow: 0 0 12px rgba(255, 23, 68, 0.5);
+    }
+    50% {
+      box-shadow: 0 0 22px rgba(255, 23, 68, 0.8);
+    }
+  }
+
+  body > div {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    padding: 1rem;
+  }
+  
+  /* Each Movie Card */
+  body > div > div {
+    background-color: #1c1c1c;  /* Deep grey background */
+    border: 2px solid #b71c1c;  /* Red accent border */
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 10px 25px rgba(183, 28, 28, 0.5);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  /* Hover effect for a movie card */
+  body > div > div:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(183, 28, 28, 0.8);
+  }
+  
+  /* Movie Poster in each card */
+  body > div > div img {
+    width: 100%;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+  }
+  
+  /* Movie Title */
+  body > div > div h2 {
+    margin: 0.5rem 0;
+    color: #ff1744; /* Bold red accent */
+  }
+  
+  /* Movie Year Text */
+  body > div > div p {
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+  }
+  
   @keyframes gradientShift {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }

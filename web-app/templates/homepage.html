@@ -10,20 +10,25 @@
   <p>Please click the button below and describe a movie you're interested in viewing.</p>
 
   <button id="recordButton">Start Recording</button>
+  <button id="stopButton" style="display: none;">Stop Recording</button>
+
   <p id="statusText">Press the button to begin.</p>
 
   <script>
     const recordButton = document.getElementById('recordButton');
+    const stopButton = document.getElementById('stopButton');
     const statusText = document.getElementById('statusText');
 
+    let mediaRecorder;
+    let chunks = [];
 
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       recordButton.addEventListener('click', () => {
 
         navigator.mediaDevices.getUserMedia({ audio: true })
           .then(stream => {
-            const mediaRecorder = new MediaRecorder(stream);
-            let chunks = [];
+            mediaRecorder = new MediaRecorder(stream);
+            chunks = [];
 
             mediaRecorder.ondataavailable = e => {
               chunks.push(e.data);
@@ -35,6 +40,8 @@
               formData.append("audio", audioBlob);
 
               statusText.textContent = "Processing your voice...";
+              recordButton.classList.remove("recording");
+              stopButton.style.display = "none"; 
 
               fetch("/process-voice", {
                 method: "POST",
@@ -52,9 +59,15 @@
             mediaRecorder.start();
             statusText.textContent = "Recording...";
 
+            recordButton.classList.add("recording");
+
+            stopButton.style.display = "inline-block";
+
     
             setTimeout(() => {
-              mediaRecorder.stop();
+              if (mediaRecorder && mediaRecorder.state === "recording") {
+                mediaRecorder.stop();
+              }
             }, 10000);
           })
           .catch(err => {
@@ -62,8 +75,15 @@
             statusText.textContent = "Microphone access is required.";
           });
       });
+
+      stopButton.addEventListener('click', () => {
+        if (mediaRecorder && mediaRecorder.state === "recording") {
+          mediaRecorder.stop();
+        }
+      });
+
     } else {
       statusText.textContent = "getUserMedia is not supported in your browser.";
     }
   </script>
-  {% endblock %}
+{% endblock %}
