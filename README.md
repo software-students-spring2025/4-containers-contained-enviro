@@ -14,7 +14,7 @@ Build a containerized app that uses machine learning. See [instructions](./instr
 
 ## Description
 
-This web app provides a personalized experience for a user to speak into a microphone about a movie that they may be interested in viewing. Once they complete their recording, they will be provided with a film that most closely aligns with their interests.
+This web app provides a personalized experience for users to describe a movie that they are interested in viewing. Once they complete their voice recording, they will be provided with a film that most closely aligns with their interests based on the description that they spoke of.
 
 ## Instructions
 
