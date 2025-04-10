@@ -1,0 +1,40 @@
+name: Build and run application (MongoDB, ML Client, Web App, and entire application)
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      # Build and run Machine Learning Client individually
+      - name: Build ML Client container
+        run: docker build -t ml-client ./machine-learning-client
+
+      - name: Run ML Client container
+        run: docker run --rm --network host ml-client
+
+      # Build and run Web App individually
+      - name: Build Web App container
+        run: docker build -t web-app ./web-app
+
+      - name: Run Web App container and test
+        run: docker run -d --rm --name test-web-app -p 5001:5001 --network host web-app
+
+      # Build and run the full system
+      - name: Build and run full system with Docker Compose
+        run: docker compose up --build -d
