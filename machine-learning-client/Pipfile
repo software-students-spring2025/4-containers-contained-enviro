@@ -12,6 +12,8 @@ pandas = "*"
 pytest-cov = "*"
 
 [dev-packages]
+tomli = "*"
+typing_extensions = "*"
 
 [requires]
 python_version = "3.10"
