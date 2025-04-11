@@ -10,6 +10,9 @@ scikit-learn = "*"
 pytest = "*"
 pandas = "*"
 pytest-cov = "*"
+pymongo = "*"
+dotenv = "*"
+flask = "*"
 
 [dev-packages]
 tomli = "*"

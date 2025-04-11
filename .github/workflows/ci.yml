@@ -26,7 +26,7 @@ jobs:
         run: docker build -t ml-client ./machine-learning-client
 
       - name: Run ML Client container
-        run: docker run --rm --network host ml-client
+        run: docker run -d --rm --network host ml-client
 
       # Build and run Web App individually
       - name: Build Web App container
