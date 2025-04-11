@@ -1,7 +1,7 @@
 """This python file tests the machine-learning-client using pytest"""
 
 import pandas as pd
-from ml import MLC
+from ml_client import MLC
 
 
 def test_get_recommendation():
