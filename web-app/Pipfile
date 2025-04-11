@@ -4,16 +4,18 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-flask = "*"
 pymongo = "*"
 python-dotenv = "*"
 requests = "*"
+flask = "*"
+pytest = "*"
+pytest-flask = "*"
 
 [dev-packages]
-pylint = "*"
-black = "*"
 tomli = "*"
 typing_extensions = "*"
+pylint = "*"
+black = "*"
 
 [requires]
 python_version = "3.10"

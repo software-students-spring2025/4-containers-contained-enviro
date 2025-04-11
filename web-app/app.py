@@ -19,15 +19,21 @@ logger = logging.getLogger(__name__)
 app = Flask(
     __name__, template_folder="templates", static_folder="static", static_url_path="/"
 )
-app.secret_key = os.getenv("SECRET_KEY", "your-secret-key-here")
+app.secret_key = os.getenv("SECRET_KEY", "movie-secret-key")
+
+if not os.getenv("FLASK_TESTING"):
+    from pymongo import MongoClient
+
+    client = MongoClient("mongodb://localhost:27017/")
+    db = client["ml_data"]
 
 
 def get_database():
     """Get MongoDB database connection."""
     try:
         # Get MongoDB connection details from environment variables
-        mongo_user = os.getenv("MONGO_USER", "ml_user")
-        mongo_password = os.getenv("MONGO_PASSWORD", "ml_password")
+        mongo_user = os.getenv("MONGO_USER", "movie_user")
+        mongo_password = os.getenv("MONGO_PASSWORD", "movie_password_321")
         mongo_host = os.getenv("MONGO_HOST", "mongodb")
         mongo_port = os.getenv("MONGO_PORT", "27017")
         mongo_db = os.getenv("MONGO_DB", "ml_data")
