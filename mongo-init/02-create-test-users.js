@@ -4,6 +4,13 @@ db = db.getSiblingDB('ml_data');
 // Create test users collection if it doesn't exist
 db.createCollection('users');
 
+db.createUser({
+    user: "movie_user",
+    pwd: "movie_password_321",
+    roles: [{ role: "readWrite", db: "ml_data" }]
+  })
+  
+
 // Add some test users with hashed passwords
 // These are werkzeug generated hashes for the passwords 'test123' and 'test456'
 db.users.insertMany([
