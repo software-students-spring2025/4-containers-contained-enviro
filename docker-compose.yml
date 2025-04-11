@@ -29,6 +29,8 @@ services:
 
   ml_client:
     build: ./machine-learning-client
+    ports:
+      - "6000:6000"
     depends_on:
       - mongodb
     environment:

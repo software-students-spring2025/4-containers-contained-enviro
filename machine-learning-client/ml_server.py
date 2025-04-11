@@ -1,6 +1,5 @@
 """ML Server sets up flask end-point to allow communication with the web-app"""
 
-import subprocess
 import logging
 import os
 from flask import Flask, request, jsonify
@@ -91,8 +90,4 @@ def recommend():
 
 
 if __name__ == "__main__":
-    if os.getenv("GITHUB_ACTIONS") == "true" or os.getenv("CI") == "true":
-        logger.info("Detected CI environment — running tests.")
-        subprocess.run(["pytest", "test_ml_client.py"], check=True)
-    else:
-        app.run(host="0.0.0.0", port=6000)
+    app.run(host="0.0.0.0", port=6000)
