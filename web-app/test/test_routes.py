@@ -1,3 +1,5 @@
+"""Unit tests for the Flask route handlers."""
+
 def test_homepage(client):
     response = client.get("/")
     assert response.status_code == 200
