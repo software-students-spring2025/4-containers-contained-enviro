@@ -1,9 +1,7 @@
 """Machine learning client for similarity recommendation."""
 
-import os
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
-from pymongo.errors import ConnectionFailure, OperationFailure
 
 
 class MLC:  # pylint: disable=too-few-public-methods

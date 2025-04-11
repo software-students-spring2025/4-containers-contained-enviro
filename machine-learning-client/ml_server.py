@@ -4,10 +4,10 @@ import logging
 import os
 from flask import Flask, request, jsonify
 import pandas as pd
-from ml_client import MLC
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure, OperationFailure
 from dotenv import load_dotenv
+from ml_client import MLC
 
 
 # Load environment variables
@@ -16,6 +16,7 @@ load_dotenv()
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
 
 def get_database():
     """Get MongoDB database connection."""
@@ -56,14 +57,18 @@ def get_database():
 
 app = Flask(__name__)
 
+
 def fetch_movies_from_db():
+    """Fetch movies from database"""
     db = get_database()
     collection = db["movies"]  # Change to match your collection name
     docs = list(collection.find({}, {"_id": 0, "title": 1, "description": 1}))
     return pd.DataFrame(docs)
 
+
 @app.route("/recommend", methods=["POST"])
 def recommend():
+    """Recommend movies endpoint"""
     data = request.get_json()
     user_description = data.get("description", "")
     threshold = float(data.get("threshold", 0.1))
@@ -82,6 +87,7 @@ def recommend():
         return jsonify({"result": result_df}), 200
 
     return jsonify(result_df.to_dict(orient="records")), 200
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=6000)
