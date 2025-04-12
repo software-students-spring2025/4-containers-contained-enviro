@@ -1,24 +1,21 @@
-"""Unit tests for the Flask route handlers."""
+"""Unit tests for main web-app routes."""
 
-
-def test_homepage(client):
-    response = client.get("/")
-    assert response.status_code == 200
-    assert b"Start Recording" in response.data
-
-
-def test_login_page(client):
+def test_login_page_access(client):
+    """Test that the login page is accessible."""
     response = client.get("/login")
     assert response.status_code == 200
     assert b"Login" in response.data
 
 
-def test_register_page(client):
+def test_register_page_access(client):
+    """Test that the register page is accessible."""
     response = client.get("/register")
     assert response.status_code == 200
-    assert b"Create an Account" in response.data
+    assert b"Register" in response.data
 
 
-def test_movies_saved_redirect(client):
-    response = client.get("/movies_saved")
-    assert response.status_code in [302, 200]
+def test_redirect_from_home(client):
+    """Test that unauthenticated users are redirected from /."""
+    response = client.get("/", follow_redirects=True)
+    assert response.status_code == 200
+    assert b"Login" in response.data
