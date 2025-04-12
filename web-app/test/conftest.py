@@ -3,6 +3,7 @@
 import pytest
 from app import app as flask_app
 
+
 @pytest.fixture
 def client():
     """Fixture to return a Flask test client for use in test cases."""
