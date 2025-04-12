@@ -10,9 +10,9 @@ services:
       - mongodb_data:/data/db
       - ./mongo-init:/docker-entrypoint-initdb.d
     environment:
-      MONGO_INITDB_ROOT_USERNAME: movie_user
-      MONGO_INITDB_ROOT_PASSWORD: movie_password_321
-      MONGO_INITDB_DATABASE: ml_data
+      MONGO_USER: ml_user
+      MONGO_PASSWORD: ml_password
+      MONGO_DB: ml_data
     networks:
       - app_network
 
@@ -30,7 +30,7 @@ services:
   ml_client:
     build: ./machine-learning-client
     ports:
-      - "6001:6000"
+      - "5002:5002"
     depends_on:
       - mongodb
     environment:

@@ -2,22 +2,32 @@
 {% extends "base.html" %}
 
 {% block title %}
-  <title>Movie Recommendations Through Voice Recording</title>
+  Movie Recommendations Through Voice Recording
 {% endblock %}
 
 
 {% block content %}
+  <a href="/logout">Logout</a>
+  <a href="/movies_saved">Previously Recommended Movies</a>
+
   <h1>Movie Recommendations For You</h1>
   <p>Please click the button below and describe a movie you're interested in viewing.</p>
 
   <button id="recordButton">Start Recording</button>
+  <button id="stopButton" style="display: none;">Stop Recording</button>
+
   <p id="statusText">Press the button to begin.</p>
   
   <button id="seeDetailsButton" style="display: none; margin-top: 10px;">See Movie Details</button>
 
   <script>
     const recordButton = document.getElementById('recordButton');
+    const stopButton = document.getElementById('stopButton');
     const statusText = document.getElementById('statusText');
+
+    let mediaRecorder;
+    let chunks = [];
+
     const seeDetailsButton = document.getElementById('seeDetailsButton');
     let currentRecommendation = null;
 
@@ -25,8 +35,8 @@
       recordButton.addEventListener('click', () => {
         navigator.mediaDevices.getUserMedia({ audio: true })
           .then(stream => {
-            const mediaRecorder = new MediaRecorder(stream);
-            let chunks = [];
+            mediaRecorder = new MediaRecorder(stream);
+            chunks = [];
 
             mediaRecorder.ondataavailable = e => {
               chunks.push(e.data);
@@ -38,9 +48,13 @@
               formData.append("audio", audioBlob);
 
               statusText.textContent = "Processing your voice...";
+              recordButton.classList.remove("recording");
+              stopButton.style.display = "none"; 
               seeDetailsButton.style.display = "none";
 
-              fetch("/process-voice", {
+              // TODO: Store audio in MongoDB
+
+              fetch("http://localhost:5002/recommend", {
                 method: "POST",
                 body: formData
               })
@@ -64,14 +78,25 @@
             mediaRecorder.start();
             statusText.textContent = "Recording...";
 
+            recordButton.classList.add("recording");
+            stopButton.style.display = "inline-block";
+
             setTimeout(() => {
-              mediaRecorder.stop();
+              if (mediaRecorder && mediaRecorder.state === "recording") {
+                mediaRecorder.stop();
+              }
             }, 10000); // 10 seconds
           })
           .catch(err => {
             console.error("The following error occurred:", err);
             statusText.textContent = "Microphone access is required.";
           });
+      });
+
+      stopButton.addEventListener('click', () => {
+        if (mediaRecorder && mediaRecorder.state === "recording") {
+          mediaRecorder.stop();
+        }
       });
       
     } else {
@@ -81,6 +106,7 @@
     // Click handler for movie detail button
     seeDetailsButton.addEventListener('click', () => {
       if (currentRecommendation) {
+        // TODO: link to movie by ID (from post to mongo db)
         window.location.href = `/movie/${encodeURIComponent(currentRecommendation)}`;
       }
     });

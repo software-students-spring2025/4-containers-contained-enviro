@@ -2,10 +2,12 @@
 {% extends "base.html" %}
 
 {% block title %}
-    <title>{{ movie.title }}</title>
+    {{ movie.title }}
 {% endblock %}
 
 {% block content %}
+    <a href="/logout">Logout</a>
+
     <div class="movie-container">
         <img class="movie-poster" src="{{ movie.poster_url }}" alt="{{ movie.title }} Poster">
 
