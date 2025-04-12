@@ -12,10 +12,14 @@
 
   <button id="recordButton">Start Recording</button>
   <p id="statusText">Press the button to begin.</p>
+  
+  <button id="seeDetailsButton" style="display: none; margin-top: 10px;">See Movie Details</button>
 
   <script>
     const recordButton = document.getElementById('recordButton');
     const statusText = document.getElementById('statusText');
+    const seeDetailsButton = document.getElementById('seeDetailsButton');
+    let currentRecommendation = null;
 
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       recordButton.addEventListener('click', () => {
@@ -34,6 +38,7 @@
               formData.append("audio", audioBlob);
 
               statusText.textContent = "Processing your voice...";
+              seeDetailsButton.style.display = "none";
 
               fetch("/process-voice", {
                 method: "POST",
@@ -42,7 +47,9 @@
               .then(res => res.json())
               .then(data => {
                 if (data.recommendation) {
-                  statusText.textContent = "Movie suggestion: " + data.recommendation;
+                  currentRecommendation = data.recommendation;
+                  statusText.textContent = "Movie suggestion: " + currentRecommendation;
+                  seeDetailsButton.style.display = "inline-block";
                 } else if (data.transcription) {
                   statusText.textContent = "Your transcription: " + data.transcription;
                 } else {
@@ -70,5 +77,12 @@
     } else {
       statusText.textContent = "getUserMedia is not supported in your browser.";
     }
+
+    // Click handler for movie detail button
+    seeDetailsButton.addEventListener('click', () => {
+      if (currentRecommendation) {
+        window.location.href = `/movie/${encodeURIComponent(currentRecommendation)}`;
+      }
+    });
   </script>
   {% endblock %}
