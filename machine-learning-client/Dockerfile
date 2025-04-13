@@ -13,6 +13,9 @@ COPY Pipfile ./
 # Install dependencies from Pipenv
 RUN pipenv install --deploy --ignore-pipfile
 
+# Install pydub dependencies
+RUN apt-get update && apt-get install -y ffmpeg flac
+
 # Copy the rest of your application
 COPY . .
 

@@ -2,6 +2,8 @@
 
 import os
 import logging
+from datetime import datetime
+import base64
 from flask import (
     Flask,
     render_template,
@@ -17,8 +19,6 @@ from pymongo.errors import ConnectionFailure, OperationFailure
 from dotenv import load_dotenv
 from werkzeug.security import generate_password_hash, check_password_hash
 from bson import ObjectId  # Needed to convert string IDs
-from datetime import datetime
-import base64
 import requests
 
 # Load environment variables
@@ -34,11 +34,8 @@ app = Flask(
 )
 app.secret_key = os.getenv("SECRET_KEY", "movie-secret-key")
 
-if not os.getenv("FLASK_TESTING"):
-    client = MongoClient("mongodb://localhost:27017/")
-    db = client["ml_data"]
 
-
+# pylint: disable=broad-except
 def get_database():
     """Get MongoDB database connection."""
     try:
@@ -91,6 +88,7 @@ except (ConnectionFailure, OperationFailure) as e:
 # New endpoint in your web app (added below your existing routes)
 @app.route("/upload_recording", methods=["POST"])
 def upload_recording():
+    """Handle upload_recording route"""
     if "user_id" not in session:
         flash("Please log in to upload recordings", "error")
         return redirect(url_for("login"))
@@ -112,7 +110,7 @@ def upload_recording():
     )
     recording_id = str(result.inserted_id)
     try:
-        requests.post("http://ml_client:5002/process_pending")
+        requests.post("http://ml_client:5002/process_pending", timeout=20)
     except Exception as e:
         logger.error("Failed to trigger ML processing: %s", str(e))
 
@@ -120,7 +118,8 @@ def upload_recording():
 
 
 @app.route("/movie/<recording_id>")
-def movie_page(recording_id):
+def movie_page(recording_id):  # pylint: disable=broad-except
+    """Handle individual movie route"""
     if "user_id" not in session:
         flash("Please log in to view movie details", "error")
         return redirect(url_for("login"))
@@ -134,7 +133,10 @@ def movie_page(recording_id):
         movie = movies_collection.find_one(
             {"title": prediction["results"]["predicted_movie"]}
         )
-        return render_template("movie_page.html", movie=movie)
+        transcription = prediction["results"]["transcription"]
+        return render_template(
+            "movie_page.html", movie=movie, transcription=transcription
+        )
     except OperationFailure:
         flash("Database error occurred", "error")
         logger.error("Database error in movie_prediction route")
@@ -148,6 +150,7 @@ def movie_page(recording_id):
 # Home page route
 @app.route("/")
 def index():
+    """Handle homepage route"""
     if "user_id" not in session:
         return redirect(url_for("login"))
     return render_template("homepage.html")
@@ -156,6 +159,7 @@ def index():
 # Login route
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    """Handle login"""
     if request.method == "POST":
         try:
             username = request.form.get("username")
@@ -177,6 +181,7 @@ def login():
 # Register route
 @app.route("/register", methods=["GET", "POST"])
 def register():
+    """Handle registration"""
     if request.method == "POST":
         try:
             username = request.form.get("username")
@@ -203,6 +208,7 @@ def register():
 #  Saved movies page route.
 @app.route("/movies_saved")
 def movies_saved():
+    """Handle saved movies route"""
     try:
         if "user_id" not in session:
             flash("Please log in to view saved movies", "error")
@@ -225,6 +231,7 @@ def movies_saved():
 # Logout route
 @app.route("/logout")
 def logout():
+    """Handle logout"""
     session.clear()
     flash("You have been logged out", "success")
     return redirect(url_for("login"))

@@ -2,7 +2,7 @@ import csv
 from pymongo import MongoClient
 
 client = MongoClient(
-    "mongodb://ml_user:ml_password@mongodb:27017/ml_data?authSource=ml_data"
+    "mongodb://movie_user:movie_password_321@mongodb:27017/ml_data?authSource=ml_data"
 )
 db = client["ml_data"]
 collection = db["movies"]

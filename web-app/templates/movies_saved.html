@@ -13,7 +13,7 @@
   <h1>Previously Recommended Movies</h1>  
 
   <div class="movies-grid">
-    {% for movie in movies %}
+    {% for movie in movies|reverse %}
       <div class="movie-card">
         {% if movie.poster_url %}
           <img src="{{ movie.poster_url }}" alt="{{ movie.predicted_movie }} Poster" style="width: 150px;">
