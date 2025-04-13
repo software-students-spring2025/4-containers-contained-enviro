@@ -9,6 +9,14 @@ html, body {
     color: #fdf3ee;
     padding: 3rem 1rem;
   }
+
+  .button-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
   
   .register-container,
   .login-container {
@@ -24,6 +32,7 @@ html, body {
     gap: 1rem;
     box-sizing: border-box;
     color: #fff;
+    margin: 0 auto;
   }
   
   h1 {
@@ -215,40 +224,116 @@ html, body {
     padding: 1rem;
   }
   
-  /* Each Movie Card */
   body > div > div {
-    background-color: #1c1c1c;  /* Deep grey background */
-    border: 2px solid #b71c1c;  /* Red accent border */
+    background-color: #1c1c1c;  
+    border: 2px solid #b71c1c; 
     border-radius: 12px;
     padding: 1rem;
     box-shadow: 0 10px 25px rgba(183, 28, 28, 0.5);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
   
-  /* Hover effect for a movie card */
   body > div > div:hover {
     transform: translateY(-5px);
     box-shadow: 0 15px 30px rgba(183, 28, 28, 0.8);
   }
   
-  /* Movie Poster in each card */
   body > div > div img {
     width: 100%;
     border-radius: 8px;
     margin-bottom: 0.75rem;
   }
   
-  /* Movie Title */
   body > div > div h2 {
     margin: 0.5rem 0;
-    color: #ff1744; /* Bold red accent */
+    color: #ff1744; 
   }
   
-  /* Movie Year Text */
   body > div > div p {
     margin: 0.5rem 0;
     font-size: 0.9rem;
   }
+
+.logout-button {
+  display: inline-block;
+  padding: 8px 16px;
+  margin: 5px;
+  background-color: #b71c1c;  
+  color: #ffffff;
+  text-decoration: none;
+  border: none;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.logout-button:hover {
+  background-color: #d32f2f; 
+}
+
+.recommended-button {
+  display: inline-block;
+  padding: 8px 16px;
+  margin: 5px;
+  background-color: #5d3232;  
+  color: #ffffff;
+  text-decoration: none;
+  border: none;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.recommended-button:hover {
+  background-color: #3e1b1b;
+}
+
+.back-button {
+  display: inline-block;
+  padding: 8px 16px;
+  margin: 5px;
+  background-color: #824242;  
+  color: #ffffff;
+  text-decoration: none;
+  border: none;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.back-button:hover {
+  background-color: #4b2c2c;
+}
+
+.seemore-button {
+  display: inline-block;
+  padding: 8px 16px;
+  margin: 5px;
+  background-color: #541010;  
+  color: #ffffff;
+  text-decoration: none;
+  border: none;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.seemore-button:hover {
+  background-color: #4b2c2c;
+}
+
+.movies-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.5rem;
+  padding: 1rem;
+}
+
+.movie-card {
+  background-color: rgba(28, 28, 28, 0.7);
+  border: 2px solid #b71c1c;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 10px 25px rgba(183, 28, 28, 0.5);
+  text-align: center;
+}
+
   
   @keyframes gradientShift {
     0% { background-position: 0% 50%; }

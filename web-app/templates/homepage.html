@@ -5,10 +5,9 @@
   Movie Recommendations Through Voice Recording
 {% endblock %}
 
-
 {% block content %}
-  <a href="/logout">Logout</a>
-  <a href="/movies_saved">Previously Recommended Movies</a>
+  <a href="/logout" class="logout-button">Logout</a>
+  <a href="/movies_saved" class="recommended-button">Previously Recommended Movies</a>
 
   <h1>Movie Recommendations For You</h1>
   <p>Please click the button below and describe a movie you're interested in viewing.</p>
@@ -18,18 +17,16 @@
 
   <p id="statusText">Press the button to begin.</p>
   
-  <button id="seeDetailsButton" style="display: none; margin-top: 10px;">See Movie Details</button>
+  <button id="seeDetailsButton" class="seemore-button" style="display: none;">See Movie Details</button>
 
   <script>
     const recordButton = document.getElementById('recordButton');
     const stopButton = document.getElementById('stopButton');
     const statusText = document.getElementById('statusText');
-
+    const seeDetailsButton = document.getElementById('seeDetailsButton');
     let mediaRecorder;
     let chunks = [];
-
-    const seeDetailsButton = document.getElementById('seeDetailsButton');
-    let currentRecommendation = null;
+    let currentRecordingId = null;
 
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       recordButton.addEventListener('click', () => {
@@ -37,7 +34,6 @@
           .then(stream => {
             mediaRecorder = new MediaRecorder(stream);
             chunks = [];
-
             mediaRecorder.ondataavailable = e => {
               chunks.push(e.data);
             };
@@ -52,22 +48,18 @@
               stopButton.style.display = "none"; 
               seeDetailsButton.style.display = "none";
 
-              // TODO: Store audio in MongoDB
-
-              fetch("http://localhost:5002/recommend", {
+              fetch("http://localhost:5001/upload_recording", {
                 method: "POST",
                 body: formData
               })
               .then(res => res.json())
               .then(data => {
-                if (data.recommendation) {
-                  currentRecommendation = data.recommendation;
-                  statusText.textContent = "Movie suggestion: " + currentRecommendation;
+                if (data.recording_id) {
+                  currentRecordingId = data.recording_id;
+                  statusText.textContent = "Recording saved. Click the button to see details.";
                   seeDetailsButton.style.display = "inline-block";
-                } else if (data.transcription) {
-                  statusText.textContent = "Your transcription: " + data.transcription;
                 } else {
-                  statusText.textContent = "An error has occurred.";
+                  statusText.textContent = "An error occurred.";
                 }
               })
               .catch(() => {
@@ -77,7 +69,6 @@
 
             mediaRecorder.start();
             statusText.textContent = "Recording...";
-
             recordButton.classList.add("recording");
             stopButton.style.display = "inline-block";
 
@@ -98,17 +89,15 @@
           mediaRecorder.stop();
         }
       });
-      
     } else {
       statusText.textContent = "getUserMedia is not supported in your browser.";
     }
 
     // Click handler for movie detail button
     seeDetailsButton.addEventListener('click', () => {
-      if (currentRecommendation) {
-        // TODO: link to movie by ID (from post to mongo db)
-        window.location.href = `/movie/${encodeURIComponent(currentRecommendation)}`;
+      if (currentRecordingId) {
+        window.location.href = `/movie/${encodeURIComponent(currentRecordingId)}`;
       }
     });
   </script>
-  {% endblock %}
+{% endblock %}

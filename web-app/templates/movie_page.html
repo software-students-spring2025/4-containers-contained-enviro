@@ -2,20 +2,23 @@
 {% extends "base.html" %}
 
 {% block title %}
-    {{ movie.title }}
+    {{ movie.predicted_movie }}
 {% endblock %}
 
 {% block content %}
-    <a href="/logout">Logout</a>
+<div class="button-row">
+    <a href="/logout" class="logout-button">Logout</a>
+    <a href="/" class="back-button">← Back to Recording</a>
+  </div>  
 
     <div class="movie-container">
-        <img class="movie-poster" src="{{ movie.poster_url }}" alt="{{ movie.title }} Poster">
-
+        {% if movie.poster_url %}
+        <img class="movie-poster" src="{{ movie.poster_url }}" alt="{{ movie.predicted_movie }} Poster">
+        {% endif %}
         <div class="movie-details">
             <h1>{{ movie.title }}</h1>
-            <div class="info"><strong>Director:</strong> {{ movie.director }}</div>
-            <div class="info"><strong>Genre:</strong> {{ movie.genre }}</div>
-            <div class="info"><strong>Actors:</strong> {{ movie.actors | join(', ') }}</div>
+            <div class="info"><strong>Duration:</strong> {{ movie.duration }}</div>
+            <div class="info"><strong>Age-Rating:</strong> {{ movie.age_rating }}</div>
             <div class="info"><strong>Year:</strong> {{ movie.year }}</div>
             <div class="info"><strong>Rating:</strong> {{ movie.rating }}</div>
             <div class="description">
