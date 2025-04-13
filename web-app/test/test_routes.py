@@ -32,12 +32,12 @@ def test_movie_page_route(client):
 
 
 def test_movies_saved_route(client):
-    """Test movies saved route."""
+    """Test movies_saved route."""
     response = client.get("/movies_saved")
     assert response.status_code == 302
 
 
 def test_logout_route(client):
-    """Test logout route. """
+    """Test logout route."""
     response = client.get("/logout")
     assert response.status_code == 302
