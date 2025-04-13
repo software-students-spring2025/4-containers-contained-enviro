@@ -5,10 +5,10 @@ db = db.getSiblingDB('ml_data');
 db.createCollection('users');
 
 db.createUser({
-    user: "movie_user",
-    pwd: "movie_password_321",
+    user: "ml_user",
+    pwd: "ml_password",
     roles: [{ role: "readWrite", db: "ml_data" }]
-})
+  })
 
 
 // Add some test users with hashed passwords
