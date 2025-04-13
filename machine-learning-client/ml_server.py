@@ -8,7 +8,8 @@ from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure, OperationFailure
 from dotenv import load_dotenv
 from ml_client import MLC
-
+from datetime import datetime
+from bson.json_util import dumps
 
 # Load environment variables
 load_dotenv()
@@ -58,37 +59,65 @@ def get_database():
 app = Flask(__name__)
 
 
-def fetch_movies_from_db():
-    """Fetch movies from database"""
+@app.route("/process_pending", methods=["POST"])
+def process_pending():
     db = get_database()
-    collection = db["movies"]  # Change to match your collection name
-    docs = list(collection.find({}, {"_id": 0, "title": 1, "description": 1}))
-    return pd.DataFrame(docs)
+    sensor_collection = db["sensor_data"]
+    results_collection = db["ml_results"]
 
+    # Find all recordings with status pending.
+    pending_docs = list(sensor_collection.find({"status": "pending"}))
+    if not pending_docs:
+        return jsonify({"message": "No pending recordings."}), 200
 
-@app.route("/recommend", methods=["POST"])
-def recommend():
-    """Recommend movies endpoint"""
-    data = request.get_json()
-    user_description = data.get("description", "")
-    threshold = float(data.get("threshold", 0.1))
+    predictions = []
 
-    movie_df = fetch_movies_from_db()
+    for doc in pending_docs:
+        recording_id = doc["_id"]
+        user_id = doc["user_id"]
 
-    if movie_df.empty:
-        return jsonify({"error": "No movie data found in the database"}), 500
+        # TODO: convert audio_data into text
+        audio_data = doc["raw_data"]
 
-    descriptions = movie_df["description"].tolist()
-    ml_client = MLC(descriptions)
+        # TODO: run model below on the text
 
-    result_df = ml_client.get_recommendations(user_description, movie_df, threshold)
+        predicted_movie = "Inception"
+        confidence = 0.95
 
-    # TODO: save to database
+        """
+        user_description = data.get("description", "")
+        threshold = float(data.get("threshold", 0.1))
 
-    if isinstance(result_df, str):
-        return jsonify({"result": result_df}), 200
+        movie_df = fetch_movies_from_db()
 
-    return jsonify(result_df.to_dict(orient="records")), 200
+        if movie_df.empty:
+            return jsonify({"error": "No movie data found in the database"}), 500
+
+        descriptions = movie_df["description"].tolist()
+        ml_client = MLC(descriptions)
+
+        result_df = ml_client.get_recommendations(user_description, movie_df, threshold)
+        """
+
+        prediction = {
+            "timestamp": datetime.now(),
+            "sensor_data_id": recording_id,
+            "model_type": "default",
+            "results": {
+                "predicted_movie": predicted_movie,
+                "confidence": confidence,
+            },
+            "user_id": user_id,
+        }
+        results_collection.insert_one(prediction)
+        sensor_collection.update_one(
+            {"_id": recording_id}, {"$set": {"status": "processed"}}
+        )
+        prediction["recording_id"] = str(recording_id)
+        predictions.append(prediction)
+
+    response_json = dumps({"processed": len(predictions), "predictions": predictions})
+    return response_json, 200, {"Content-Type": "application/json"}
 
 
 if __name__ == "__main__":

@@ -2,11 +2,24 @@
 
 import os
 import logging
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import (
+    Flask,
+    render_template,
+    request,
+    redirect,
+    url_for,
+    flash,
+    session,
+    jsonify,
+)
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure, OperationFailure
 from dotenv import load_dotenv
 from werkzeug.security import generate_password_hash, check_password_hash
+from bson import ObjectId  # Needed to convert string IDs
+from datetime import datetime
+import base64
+import requests
 
 # Load environment variables
 load_dotenv()
@@ -22,8 +35,6 @@ app = Flask(
 app.secret_key = os.getenv("SECRET_KEY", "movie-secret-key")
 
 if not os.getenv("FLASK_TESTING"):
-    from pymongo import MongoClient
-
     client = MongoClient("mongodb://localhost:27017/")
     db = client["ml_data"]
 
@@ -77,6 +88,63 @@ except (ConnectionFailure, OperationFailure) as e:
     raise
 
 
+# New endpoint in your web app (added below your existing routes)
+@app.route("/upload_recording", methods=["POST"])
+def upload_recording():
+    if "user_id" not in session:
+        flash("Please log in to upload recordings", "error")
+        return redirect(url_for("login"))
+    if "audio" not in request.files:
+        return jsonify({"error": "No audio file provided"}), 400
+    audio_file = request.files["audio"]
+    audio_data = audio_file.read()
+
+    raw_data = {"audio": base64.b64encode(audio_data).decode("utf-8")}
+
+    result = sensor_data_collection.insert_one(
+        {
+            "user_id": session["user_id"],
+            "status": "pending",
+            "timestamp": datetime.now(),
+            "sensor_type": "microphone",
+            "raw_data": raw_data,
+        }
+    )
+    recording_id = str(result.inserted_id)
+    try:
+        requests.post("http://ml_client:5002/process_pending")
+    except Exception as e:
+        logger.error("Failed to trigger ML processing: %s", str(e))
+
+    return jsonify({"recording_id": recording_id}), 200
+
+
+@app.route("/movie/<recording_id>")
+def movie_page(recording_id):
+    if "user_id" not in session:
+        flash("Please log in to view movie details", "error")
+        return redirect(url_for("login"))
+    try:
+        prediction = ml_results_collection.find_one(
+            {"sensor_data_id": ObjectId(recording_id)}
+        )
+        if not prediction:
+            flash("Movie prediction not found", "error")
+            return redirect(url_for("index"))
+        movie = movies_collection.find_one(
+            {"title": prediction["results"]["predicted_movie"]}
+        )
+        return render_template("movie_page.html", movie=movie)
+    except OperationFailure:
+        flash("Database error occurred", "error")
+        logger.error("Database error in movie_prediction route")
+        return redirect(url_for("index"))
+    except Exception as e:
+        flash("An error occurred", "error")
+        logger.error("Error in movie_page route: %s", str(e))
+        return redirect(url_for("index"))
+
+
 # Home page route
 @app.route("/")
 def index():
@@ -113,7 +181,6 @@ def register():
         try:
             username = request.form.get("username")
             password = request.form.get("password")
-
             if users_collection.find_one({"username": username}):
                 flash("Username already exists", "error")
             else:
@@ -130,27 +197,7 @@ def register():
         except OperationFailure:
             flash("Database error occurred", "error")
             logger.error("Database error in register route")
-
     return render_template("register.html")
-
-
-# Movie details page route
-@app.route("/movie/<movie_title>")
-def movie_page(movie_title):
-    try:
-        if "user_id" not in session:
-            flash("Please log in to view movie details", "error")
-            return redirect(url_for("login"))
-        # TODO: fetch by ID
-        movie_obj = movies_collection.find_one({"title": movie_title})
-        if not movie_obj:
-            flash("Movie not found", "error")
-            return redirect(url_for("index"))
-        return render_template("movie_page.html", movie=movie_obj)
-    except OperationFailure:
-        flash("Database error occurred", "error")
-        logger.error("Database error in movie_page route")
-        return redirect(url_for("index"))
 
 
 #  Saved movies page route.
@@ -160,14 +207,15 @@ def movies_saved():
         if "user_id" not in session:
             flash("Please log in to view saved movies", "error")
             return redirect(url_for("login"))
-
-        user = users_collection.find_one({"_id": session["user_id"]})
-        if user:
-            saved_movies = movies_collection.find(
-                {"_id": {"$in": user.get("saved_movies", [])}}
+        saved_predictions = ml_results_collection.find({"user_id": session["user_id"]})
+        movies = []
+        for prediction in saved_predictions:
+            movie = movies_collection.find_one(
+                {"title": prediction["results"]["predicted_movie"]}
             )
-            return render_template("movies_saved.html", movies=saved_movies)
-        return render_template("movies_saved.html", movies=[])
+            movie["sensor_data_id"] = prediction["sensor_data_id"]
+            movies.append(movie)
+        return render_template("movies_saved.html", movies=movies)
     except OperationFailure:
         flash("Database error occurred", "error")
         logger.error("Database error in movies_saved route")
