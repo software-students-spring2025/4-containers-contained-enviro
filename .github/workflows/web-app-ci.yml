@@ -1,0 +1,37 @@
+name: Web App CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test-web:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      # Build the Web App container
+      - name: Build Web App container
+        run: docker build -t web-app ./web-app
+
+      # Run the Web App container and test
+      - name: Run and test Web App container
+        run: |
+          docker run -d --rm --name test-web-app -p 5004:5001 web-app
+          # Wait a few seconds for the app to start up
+          sleep 10
+          # Test that the web app responds (adjust port as needed)
+          curl --retry 5 --retry-delay 5 --fail http://localhost:5004
+          # Stop the container after testing
+          docker stop test-web-app

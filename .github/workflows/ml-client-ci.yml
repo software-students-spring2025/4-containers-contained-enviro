@@ -1,0 +1,30 @@
+name: ML Client CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test-ml:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      # Build the Machine Learning Client container
+      - name: Build ML Client container
+        run: docker build -t ml-client ./machine-learning-client
+
+      # Run the Machine Learning Client container
+      - name: Run ML Client container test
+        run: docker run --rm ml-client python -c "print('ML Client container is running')"
