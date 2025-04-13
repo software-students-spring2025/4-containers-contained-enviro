@@ -9,7 +9,7 @@ db.createUser({
     pwd: "ml_password",
     roles: [{ role: "readWrite", db: "ml_data" }]
   })
-  
+
 
 // Add some test users with hashed passwords
 // These are werkzeug generated hashes for the passwords 'test123' and 'test456'
