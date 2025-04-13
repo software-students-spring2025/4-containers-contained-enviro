@@ -6,8 +6,9 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 
-nltk.download('wordnet')
-nltk.download('stopwords')
+nltk.download("wordnet")
+nltk.download("stopwords")
+
 
 class MLC:  # pylint: disable=too-few-public-methods
     """This is the Machine Learning Client class"""
@@ -21,13 +22,17 @@ class MLC:  # pylint: disable=too-few-public-methods
     def lemmatize_text(self, text):
         """Lemmatizes the input text using NLTK's WordNet Lemmatizer"""
         lemmatizer = WordNetLemmatizer()
-        stop_words = set(stopwords.words('english'))
-        
+        stop_words = set(stopwords.words("english"))
+
         words = text.split()
-        lemmatized_text = " ".join([
-            lemmatizer.lemmatize(word.lower()) for word in words if word.lower() not in stop_words
-        ])
-        
+        lemmatized_text = " ".join(
+            [
+                lemmatizer.lemmatize(word.lower())
+                for word in words
+                if word.lower() not in stop_words
+            ]
+        )
+
         return lemmatized_text
 
     def get_recommendation(self, description, df, threshold=0.1):

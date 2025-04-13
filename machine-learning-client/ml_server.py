@@ -5,16 +5,16 @@ import os
 import io
 import base64
 import random
-from flask import Flask, request, jsonify
+from datetime import datetime
+from flask import Flask, jsonify
 import pandas as pd
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure, OperationFailure
 from dotenv import load_dotenv
-from ml_client import MLC
-from datetime import datetime
 from bson.json_util import dumps
 import speech_recognition as sr
 from pydub import AudioSegment
+from ml_client import MLC
 
 # Load environment variables
 load_dotenv()
@@ -22,7 +22,8 @@ load_dotenv()
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-pd.set_option('display.max_columns', None)
+pd.set_option("display.max_columns", None)
+
 
 def get_database():
     """Get MongoDB database connection."""
@@ -65,7 +66,8 @@ app = Flask(__name__)
 
 
 @app.route("/process_pending", methods=["POST"])
-def process_pending():
+def process_pending():  # pylint: disable-msg=too-many-locals
+    """Endpoint for processing audio"""
     logger.info("Received request to /process_pending")
     db = get_database()
     sensor_collection = db["sensor_data"]
@@ -82,12 +84,11 @@ def process_pending():
         recording_id = doc["_id"]
         user_id = doc["user_id"]
 
-        # TODO: convert audio_data into text
-        audio_data = doc["raw_data"]['audio']
+        audio_data = doc["raw_data"]["audio"]
         audio_bytes = base64.b64decode(audio_data)
         audio = AudioSegment.from_file(io.BytesIO(audio_bytes))
-        with open('temp_audio.wav', 'wb') as f:
-            audio.export(f, format='wav')
+        with open("temp_audio.wav", "wb") as f:
+            audio.export(f, format="wav")
 
         recognizer = sr.Recognizer()
 
@@ -95,15 +96,20 @@ def process_pending():
             audio_data = recognizer.record(source)
             try:
                 transcription = recognizer.recognize_google(audio_data).lower()
-                logger.info("Transcription: %s", transcription)
+                logger.info("Transcription: {transcription}")
             except sr.UnknownValueError:
                 logger.info("Google Speech Recognition could not understand the audio")
-                return jsonify({"error": "Audio not captured correctly. Try again."}), 500
+                return (
+                    jsonify({"error": "Audio not captured correctly. Try again."}),
+                    500,
+                )
             except sr.RequestError as e:
-                logger.info(f"Could not request results from Google Speech Recognition service; {e}")
+                logger.info(
+                    "Could not request results from Google Speech Recognition service %s",
+                    {e},
+                )
 
-        # TODO: run model below on the text
-        cursor = db.movies.find({}, {'_id': 0})
+        cursor = db.movies.find({}, {"_id": 0})
         movies_df = pd.DataFrame(list(cursor))
 
         if movies_df.empty:
@@ -113,14 +119,14 @@ def process_pending():
         ml_client = MLC(descriptions)
 
         result_df = ml_client.get_recommendation(transcription, movies_df)
-        
-        logger.info("result_df: %s", result_df)
-        
+
+        logger.info("result_df: %s", {result_df})
+
         if not result_df.empty:
             predicted_movie = random.choices(
-                population=result_df['title'].tolist(), 
-                weights=result_df['similarity'].tolist(), 
-                k=1
+                population=result_df["title"].tolist(),
+                weights=result_df["similarity"].tolist(),
+                k=1,
             )[0]
         else:
             predicted_movie = None
@@ -131,7 +137,7 @@ def process_pending():
             "model_type": "default",
             "results": {
                 "predicted_movie": predicted_movie,
-                "transcription": transcription
+                "transcription": transcription,
             },
             "user_id": user_id,
         }
