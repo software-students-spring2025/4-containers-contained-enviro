@@ -16,6 +16,10 @@ Build a containerized app that uses machine learning. See [instructions](./instr
 
 This web app provides a personalized experience for users to describe a movie that they are interested in viewing. Once they complete their voice recording, they will be provided with a film that most closely aligns with their interests based on the description that they spoke of. For every finished recording, they will be able to view a dashboard of the movies that were recommended to them.
 
+# Task Board
+
+Attached [here](https://github.com/orgs/software-students-spring2025/projects/186/views/1?layout=board) is our task board.
+
 ## Instructions
 
 ### All services
