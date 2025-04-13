@@ -96,7 +96,7 @@ def process_pending():  # pylint: disable-msg=too-many-locals
             audio_data = recognizer.record(source)
             try:
                 transcription = recognizer.recognize_google(audio_data).lower()
-                logger.info("Transcription: {transcription}")
+                logger.info("Transcription: %s", {transcription})
             except sr.UnknownValueError:
                 logger.info("Google Speech Recognition could not understand the audio")
                 return (
@@ -120,7 +120,7 @@ def process_pending():  # pylint: disable-msg=too-many-locals
 
         result_df = ml_client.get_recommendation(transcription, movies_df)
 
-        logger.info("result_df: %s", {result_df})
+        logger.info("result_df: %s", result_df)
 
         if not result_df.empty:
             predicted_movie = random.choices(
