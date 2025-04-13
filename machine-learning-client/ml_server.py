@@ -83,6 +83,8 @@ def recommend():
 
     result_df = ml_client.get_recommendations(user_description, movie_df, threshold)
 
+    # TODO: save to database
+
     if isinstance(result_df, str):
         return jsonify({"result": result_df}), 200
 
@@ -90,4 +92,4 @@ def recommend():
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=6000)
+    app.run(host="0.0.0.0", port=5002)

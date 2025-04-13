@@ -17,7 +17,7 @@ RUN pipenv install --deploy --ignore-pipfile
 COPY . .
 
 # Expose port for Flask app
-EXPOSE 6000
+EXPOSE 5002
 
 # Run the ML client
 CMD ["pipenv", "run", "python", "ml_server.py"]

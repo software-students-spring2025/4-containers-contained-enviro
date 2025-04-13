@@ -26,14 +26,14 @@ jobs:
         run: docker build -t ml-client ./machine-learning-client
 
       - name: Run ML Client container
-        run: docker run -d --rm --network host ml-client
+        run: docker run -d --rm --name test-ml-client -p 5003:5002 ml-client
 
       # Build and run Web App individually
       - name: Build Web App container
         run: docker build -t web-app ./web-app
 
       - name: Run Web App container and test
-        run: docker run -d --rm --name test-web-app -p 5001:5001 --network host web-app
+        run: docker run -d --rm --name test-web-app -p 5004:5001 web-app
 
       # Build and run the full system
       - name: Build and run full system with Docker Compose

@@ -32,8 +32,8 @@ def get_database():
     """Get MongoDB database connection."""
     try:
         # Get MongoDB connection details from environment variables
-        mongo_user = os.getenv("MONGO_USER", "movie_user")
-        mongo_password = os.getenv("MONGO_PASSWORD", "movie_password_321")
+        mongo_user = os.getenv("MONGO_USER", "ml_user")
+        mongo_password = os.getenv("MONGO_PASSWORD", "ml_password")
         mongo_host = os.getenv("MONGO_HOST", "mongodb")
         mongo_port = os.getenv("MONGO_PORT", "27017")
         mongo_db = os.getenv("MONGO_DB", "ml_data")
@@ -77,15 +77,17 @@ except (ConnectionFailure, OperationFailure) as e:
     raise
 
 
+# Home page route
 @app.route("/")
 def index():
-    """Home page route."""
+    if "user_id" not in session:
+        return redirect(url_for("login"))
     return render_template("homepage.html")
 
 
+# Login route
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    """Login route."""
     if request.method == "POST":
         try:
             username = request.form.get("username")
@@ -104,9 +106,9 @@ def login():
     return render_template("login.html")
 
 
+# Register route
 @app.route("/register", methods=["GET", "POST"])
 def register():
-    """Register route."""
     if request.method == "POST":
         try:
             username = request.form.get("username")
@@ -132,10 +134,14 @@ def register():
     return render_template("register.html")
 
 
+# Movie details page route
 @app.route("/movie/<movie_title>")
 def movie_page(movie_title):
-    """Movie details page route."""
     try:
+        if "user_id" not in session:
+            flash("Please log in to view movie details", "error")
+            return redirect(url_for("login"))
+        # TODO: fetch by ID
         movie_obj = movies_collection.find_one({"title": movie_title})
         if not movie_obj:
             flash("Movie not found", "error")
@@ -147,9 +153,9 @@ def movie_page(movie_title):
         return redirect(url_for("index"))
 
 
+#  Saved movies page route.
 @app.route("/movies_saved")
 def movies_saved():
-    """Saved movies page route."""
     try:
         if "user_id" not in session:
             flash("Please log in to view saved movies", "error")
@@ -168,12 +174,12 @@ def movies_saved():
         return render_template("movies_saved.html", movies=[])
 
 
+# Logout route
 @app.route("/logout")
 def logout():
-    """Logout route."""
     session.clear()
     flash("You have been logged out", "success")
-    return redirect(url_for("index"))
+    return redirect(url_for("login"))
 
 
 if __name__ == "__main__":
