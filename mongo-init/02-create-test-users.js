@@ -5,11 +5,11 @@ db = db.getSiblingDB('ml_data');
 db.createCollection('users');
 
 db.createUser({
-    user: "ml_user",
-    pwd: "ml_password",
+    user: "movie_user",
+    pwd: "movie_password_321",
     roles: [{ role: "readWrite", db: "ml_data" }]
-  })
-  
+})
+
 
 // Add some test users with hashed passwords
 // These are werkzeug generated hashes for the passwords 'test123' and 'test456'
