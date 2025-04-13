@@ -152,6 +152,7 @@ def movie_page(movie_title):
         logger.error("Database error in movie_page route")
         return redirect(url_for("index"))
 
+
 #  Saved movies page route.
 @app.route("/movies_saved")
 def movies_saved():
