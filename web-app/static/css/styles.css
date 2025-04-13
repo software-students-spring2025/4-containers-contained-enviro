@@ -141,6 +141,14 @@ html, body {
     color: #cfcfcf;
     font-style: italic;
   }
+
+  .movie-container .transcription {
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #444;
+    color: #ddd;
+    width: 100%;
+  }
   
   @media (max-width: 600px) {
     .movie-container {

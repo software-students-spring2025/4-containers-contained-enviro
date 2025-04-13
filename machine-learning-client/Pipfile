@@ -13,6 +13,10 @@ pytest-cov = "*"
 pymongo = "*"
 dotenv = "*"
 flask = "*"
+openai = "*"
+speechrecognition = "*"
+pydub = "*"
+nltk = "*"
 
 [dev-packages]
 tomli = "*"

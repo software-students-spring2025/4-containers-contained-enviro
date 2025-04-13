@@ -134,7 +134,8 @@ def movie_page(recording_id):
         movie = movies_collection.find_one(
             {"title": prediction["results"]["predicted_movie"]}
         )
-        return render_template("movie_page.html", movie=movie)
+        transcription = prediction['results']['transcription']
+        return render_template("movie_page.html", movie=movie, transcription=transcription)
     except OperationFailure:
         flash("Database error occurred", "error")
         logger.error("Database error in movie_prediction route")

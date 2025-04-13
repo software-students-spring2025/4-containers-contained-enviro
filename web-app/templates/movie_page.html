@@ -12,6 +12,7 @@
   </div>  
 
     <div class="movie-container">
+        <div class="transcription">I heard <em>"{{ transcription }}"</em>. I think you would like this movie:</div>
         {% if movie.poster_url %}
         <img class="movie-poster" src="{{ movie.poster_url }}" alt="{{ movie.predicted_movie }} Poster">
         {% endif %}
