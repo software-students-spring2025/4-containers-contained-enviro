@@ -3,7 +3,6 @@
 ![Event Logger](https://github.com/nyu-software-engineering/containerized-app-exercise/actions/workflows/event-logger.yml/badge.svg)
 
 [![Web App Tests](https://github.com/software-students-spring2025/4-containers-contained-enviro/actions/workflows/web-app-tests.yml/badge.svg)](https://github.com/software-students-spring2025/4-containers-contained-enviro/actions/workflows/web-app-tests.yml)
-
 [![ML Client Tests](https://github.com/software-students-spring2025/4-containers-contained-enviro/actions/workflows/ml-client-tests.yml/badge.svg)](https://github.com/software-students-spring2025/4-containers-contained-enviro/actions/workflows/ml-client-tests.yml)
 
 # Containerized App Exercise
