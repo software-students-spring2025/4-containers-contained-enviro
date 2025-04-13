@@ -197,23 +197,27 @@ html, body {
     background-color: #ff1744;
     box-shadow: 0 0 20px rgba(255, 23, 68, 0.4);
     transform: scale(1.03);
+    display: none;
   }
 
   #stopButton {
-    margin: 1rem auto;
-    padding: 1rem 2rem;
+    margin: 2rem auto;
+    padding: 1rem 2.5rem;
     font-size: 1.1rem;
-    font-weight: 500;
-    background-color: #444;
+    font-weight: 600;
+    background-color: #666;
     color: #fff;
     border: none;
-    border-radius: 50px;
+    border-radius: 40px;
     cursor: pointer;
     transition: background-color 0.3s;
+    animation: elegantPulse 1.5s ease-in-out infinite;
+    box-shadow: 0 0 20px rgba(255, 23, 68, 0.4);
+    transform: scale(1.03);
 }
   
 #stopButton:hover {
-    background-color: #666;
+    background-color: #ff1744;
 }
   
   @keyframes elegantPulse {
